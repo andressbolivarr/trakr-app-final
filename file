@@ -1,0 +1,169 @@
+diff --git a/Trakr.xcodeproj/project.pbxproj b/Trakr.xcodeproj/project.pbxproj
+index b021d5c..1f1e631 100644
+--- a/Trakr.xcodeproj/project.pbxproj
++++ b/Trakr.xcodeproj/project.pbxproj
+@@ -9,6 +9,8 @@
+ /* Begin PBXBuildFile section */
+ 		3EEE9A01275B9A0F0099C47C /* locations.json in Resources */ = {isa = PBXBuildFile; fileRef = 3EEE99FF275B9A0F0099C47C /* locations.json */; };
+ 		3EEE9A02275B9A0F0099C47C /* tips.json in Resources */ = {isa = PBXBuildFile; fileRef = 3EEE9A00275B9A0F0099C47C /* tips.json */; };
++		3EEE9A04275BA96E0099C47C /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EEE9A03275BA96E0099C47C /* Location.swift */; };
++		3EEE9A06275BAF330099C47C /* Locations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EEE9A05275BAF330099C47C /* Locations.swift */; };
+ 		3EFC3AC8275B93D200AF7A5F /* TrakrApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EFC3AC7275B93D200AF7A5F /* TrakrApp.swift */; };
+ 		3EFC3ACA275B93D200AF7A5F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EFC3AC9275B93D200AF7A5F /* ContentView.swift */; };
+ 		3EFC3ACC275B93D400AF7A5F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3EFC3ACB275B93D400AF7A5F /* Assets.xcassets */; };
+@@ -18,6 +20,8 @@
+ /* Begin PBXFileReference section */
+ 		3EEE99FF275B9A0F0099C47C /* locations.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = locations.json; sourceTree = "<group>"; };
+ 		3EEE9A00275B9A0F0099C47C /* tips.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = tips.json; sourceTree = "<group>"; };
++		3EEE9A03275BA96E0099C47C /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
++		3EEE9A05275BAF330099C47C /* Locations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Locations.swift; sourceTree = "<group>"; };
+ 		3EFC3AC4275B93D200AF7A5F /* Trakr.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Trakr.app; sourceTree = BUILT_PRODUCTS_DIR; };
+ 		3EFC3AC7275B93D200AF7A5F /* TrakrApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrakrApp.swift; sourceTree = "<group>"; };
+ 		3EFC3AC9275B93D200AF7A5F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+@@ -57,6 +61,8 @@
+ 			children = (
+ 				3EFC3AC7275B93D200AF7A5F /* TrakrApp.swift */,
+ 				3EFC3AC9275B93D200AF7A5F /* ContentView.swift */,
++				3EEE9A05275BAF330099C47C /* Locations.swift */,
++				3EEE9A03275BA96E0099C47C /* Location.swift */,
+ 				3EEE99FF275B9A0F0099C47C /* locations.json */,
+ 				3EEE9A00275B9A0F0099C47C /* tips.json */,
+ 				3EFC3ACB275B93D400AF7A5F /* Assets.xcassets */,
+@@ -146,6 +152,8 @@
+ 			buildActionMask = 2147483647;
+ 			files = (
+ 				3EFC3ACA275B93D200AF7A5F /* ContentView.swift in Sources */,
++				3EEE9A04275BA96E0099C47C /* Location.swift in Sources */,
++				3EEE9A06275BAF330099C47C /* Locations.swift in Sources */,
+ 				3EFC3AC8275B93D200AF7A5F /* TrakrApp.swift in Sources */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+diff --git a/Trakr/ContentView.swift b/Trakr/ContentView.swift
+index 79c5ee1..719213f 100644
+--- a/Trakr/ContentView.swift
++++ b/Trakr/ContentView.swift
+@@ -8,21 +8,41 @@
+ import SwiftUI
+ 
+ struct ContentView: View {
++    let location: Location
++    
+     var body: some View {
+-        VStack{
+-        Image("highlands")
++        ScrollView{
++            Image(location.heroPicture)
+             .resizable()
+             .scaledToFit()
+         
+-        Text("Highlands")
++            Text(location.name)
+                 .font(.largeTitle)
++                .bold()
++                .multilineTextAlignment(.center)
++                
++            
++            Text(location.country)
++                .font(.title)
++                .foregroundColor(.secondary)
++            
++            Text(location.description)
++            
++        Text("Did you know?")
++                .font(.title3)
++                .bold()
++                .padding(.top)
++            
++            Text(location.more)
+         }
++        .navigationTitle("Discover")
++        .padding()
+     }
+ }
+ 
+ struct ContentView_Previews: PreviewProvider {
+     static var previews: some View {
+-        ContentView()
++        ContentView(location: Location.example)
+ .previewInterfaceOrientation(.portrait)
+     }
+ }
+diff --git a/Trakr/Location.swift b/Trakr/Location.swift
+new file mode 100644
+index 0000000..620baf0
+--- /dev/null
++++ b/Trakr/Location.swift
+@@ -0,0 +1,22 @@
++//
++//  Location.swift
++//  Trakr
++//
++//  Created by Andres Bolivar on 12/4/21.
++//
++
++import Foundation
++
++struct Location: Decodable{
++    let id: Int
++    let name: String
++    let country: String
++    let description: String
++    let more: String
++    let latitude: Double
++    let longitude: Double
++    let heroPicture: String
++    let advisory: String
++    
++    static let example = Location(id: 1, name: "Great Monkey Mountains", country: "United States", description: "A great place to visit.", more: "More text here.", latitude: 35.6532, longitude: -83.6070, heroPicture: "smokies", advisory: "Beware of the bears!")
++}
+diff --git a/Trakr/TrakrApp.swift b/Trakr/TrakrApp.swift
+index ecd78c6..c5f9894 100644
+--- a/Trakr/TrakrApp.swift
++++ b/Trakr/TrakrApp.swift
+@@ -11,7 +11,15 @@ import SwiftUI
+ struct TrakrApp: App {
+     var body: some Scene {
+         WindowGroup {
+-            ContentView()
+-        }
++            TabView{
++            NavigationView{
++                ContentView(location: Locations().primary)
++            }
++            .tabItem {
++                Image(systemName: "airplane.circle.fill")
++                Text("Discover!")
++            }
++        } 
+     }
+ }
++}
+diff --git a/Trakr/locations.swift b/Trakr/locations.swift
+new file mode 100644
+index 0000000..df743ff
+--- /dev/null
++++ b/Trakr/locations.swift
+@@ -0,0 +1,23 @@
++//
++//  locations.swift
++//  Trakr
++//
++//  Created by Andres Bolivar on 12/4/21.
++//
++
++import Foundation
++
++class Locations: ObservableObject{
++    let places: [Location]
++    
++    var primary: Location {
++        places[0]
++    }
++    
++    init(){
++        let url = Bundle.main.url(forResource: "locations", withExtension: "json")!
++        let data = try! Data(contentsOf: url);
++        places =  try! JSONDecoder().decode([Location].self, from: data)
++    }
++}
++    
